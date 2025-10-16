@@ -8,6 +8,7 @@ import { useEnterOptionSubmit } from './hooks/useEnterOptionSubmit';
 
 import styles from './Select.module.scss';
 
+type StyleKey = keyof typeof styles;
 type OptionProps = {
 	option: OptionType;
 	onClick: (value: OptionType['value']) => void;
@@ -15,11 +16,13 @@ type OptionProps = {
 
 export const Option = (props: OptionProps) => {
 	const {
-		option: { value, title, optionClassName, className },
+		option: { value, title, className },
 		onClick,
 	} = props;
 	const optionRef = useRef<HTMLLIElement>(null);
 
+	// Добавил для правильной индексации элемента списка
+	const key = props.option.optionClassName as StyleKey;
 	const handleClick =
 		(clickedValue: OptionType['value']): MouseEventHandler<HTMLLIElement> =>
 		() => {
@@ -34,7 +37,7 @@ export const Option = (props: OptionProps) => {
 
 	return (
 		<li
-			className={clsx(styles.option, styles[optionClassName || ''])}
+			className={clsx(styles.option, key ? styles[key] : undefined)}
 			value={value}
 			onClick={handleClick(value)}
 			tabIndex={0}
