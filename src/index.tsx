@@ -2,9 +2,9 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode, CSSProperties, useState } from 'react';
 import clsx from 'clsx';
 
-import { Article } from './components/article/Article';
-import { ArticleParamsForm } from './components/article-params-form/ArticleParamsForm';
-import { defaultArticleState, OptionType } from './constants/articleProps';
+import { Article } from 'components/article';
+import { ArticleParamsForm } from 'components/article-params-form';
+import { defaultArticleStytles, OptionType } from './constants/articleProps';
 
 import './styles/index.scss';
 import styles from './styles/index.module.scss';
@@ -21,13 +21,7 @@ export interface IFormTypeData {
 }
 
 const App = () => {
-	const [formData, setFormData] = useState({
-		'--font-family': defaultArticleState.fontFamilyOption.value,
-		'--font-size': defaultArticleState.fontSizeOption.value,
-		'--font-color': defaultArticleState.fontColor.value,
-		'--container-width': defaultArticleState.contentWidth.value,
-		'--bg-color': defaultArticleState.backgroundColor.value,
-	});
+	const [formData, setFormData] = useState(defaultArticleStytles);
 
 	function normalizeFormData(data: IFormTypeData) {
 		const result: Record<keyof IFormTypeData, string> = {
@@ -37,20 +31,26 @@ const App = () => {
 			'--container-width': '',
 			'--bg-color': '',
 		};
-
 		for (const key of Object.keys(data) as Array<keyof IFormTypeData>) {
 			result[key] = data[key]?.value ?? '';
 		}
-
 		return result;
 	}
-	function handlerFormData(data: IFormTypeData) {
+
+	function handleFormSubmit(data: IFormTypeData) {
 		setFormData(normalizeFormData(data));
+	}
+
+	function handleFormReset() {
+		setFormData(defaultArticleStytles);
 	}
 
 	return (
 		<main className={clsx(styles.main)} style={formData as CSSProperties}>
-			<ArticleParamsForm onSubmit={handlerFormData} />
+			<ArticleParamsForm
+				onSubmit={handleFormSubmit}
+				onReset={handleFormReset}
+			/>
 			<Article />
 		</main>
 	);

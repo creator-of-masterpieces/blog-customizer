@@ -3,7 +3,7 @@ import { Button } from 'src/ui/button';
 import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
-import { IFormTypeData } from '../../index';
+import { IFormTypeData } from 'src/index';
 
 import styles from './ArticleParamsForm.module.scss';
 import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
@@ -19,12 +19,14 @@ import {
 } from 'src/constants/articleProps';
 import { RadioGroup } from 'src/ui/radio-group';
 
-interface IArticleParamsFormProps {
+export interface IArticleParamsFormProps {
 	onSubmit: (data: IFormTypeData) => void;
+	onReset: () => void;
 }
 
 export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
 	onSubmit,
+	onReset,
 }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [currentFont, setCurrentFont] = useState<OptionType | null>(
@@ -114,6 +116,7 @@ export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
 		setBackgroundColor(defaultArticleState.backgroundColor);
 		setContentWidth(defaultArticleState.contentWidth);
 		setFontSize(defaultArticleState.fontSizeOption);
+		onReset();
 	}
 
 	return (
