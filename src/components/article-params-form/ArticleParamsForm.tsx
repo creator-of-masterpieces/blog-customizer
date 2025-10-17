@@ -3,13 +3,15 @@ import { Button } from 'src/ui/button';
 import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
+import { IFormTypeData } from '../../index';
 
 import styles from './ArticleParamsForm.module.scss';
-import { useEffect, useRef, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import {
 	backgroundColors,
 	contentWidthArr,
+	defaultArticleState,
 	fontColors,
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -17,23 +19,31 @@ import {
 } from 'src/constants/articleProps';
 import { RadioGroup } from 'src/ui/radio-group';
 
-export const ArticleParamsForm = () => {
+interface IArticleParamsFormProps {
+	onSubmit: (data: IFormTypeData) => void;
+}
+
+export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
+	onSubmit,
+}) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [currentFont, setCurrentFont] = useState<OptionType | null>(
-		fontFamilyOptions[0]
+		defaultArticleState.fontFamilyOption
 	);
 	const [currentFontColor, setCurrentFontColor] = useState<OptionType | null>(
-		fontColors[0]
+		defaultArticleState.fontColor
 	);
 	const [backgroundColor, setBackgroundColor] = useState<OptionType | null>(
-		backgroundColors[0]
+		defaultArticleState.backgroundColor
 	);
 	const [contentWidth, setContentWidth] = useState<OptionType | null>(
-		contentWidthArr[0]
+		defaultArticleState.contentWidth
 	);
-	const [fontSize, setFontSize] = useState<OptionType>(fontSizeOptions[0]);
+	const [fontSize, setFontSize] = useState<OptionType>(
+		defaultArticleState.fontSizeOption
+	);
 
-	const articleParamsFormRef = useRef<HTMLDivElement>(null);
+	const articleParamsFormRef = useRef<HTMLFormElement | null>(null);
 
 	useEffect(() => {
 		// Обработчик закрытия окна по Esc
@@ -51,6 +61,7 @@ export const ArticleParamsForm = () => {
 				setIsOpen(false);
 			}
 		}
+
 		document.addEventListener('keydown', escapeHandler);
 		document.addEventListener('mousedown', handleClickOutside);
 		return () => {
@@ -84,6 +95,27 @@ export const ArticleParamsForm = () => {
 		setFontSize(selectedOption);
 	}
 
+	// Обработчик отправки формы
+	function handleFormSubmit(evt: SyntheticEvent) {
+		evt.preventDefault();
+		onSubmit({
+			'--font-family': currentFont,
+			'--font-size': fontSize,
+			'--font-color': currentFontColor,
+			'--container-width': contentWidth,
+			'--bg-color': backgroundColor,
+		});
+	}
+
+	// Сбрасывает значение полей формы до дефолтных
+	function resetForm() {
+		setCurrentFont(defaultArticleState.fontFamilyOption);
+		setCurrentFontColor(defaultArticleState.fontColor);
+		setBackgroundColor(defaultArticleState.backgroundColor);
+		setContentWidth(defaultArticleState.contentWidth);
+		setFontSize(defaultArticleState.fontSizeOption);
+	}
+
 	return (
 		<>
 			<ArrowButton
@@ -95,7 +127,10 @@ export const ArticleParamsForm = () => {
 			<aside
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}
 				ref={articleParamsFormRef}>
-				<form className={styles.form}>
+				<form
+					className={styles.form}
+					ref={articleParamsFormRef}
+					onSubmit={handleFormSubmit}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
@@ -138,7 +173,12 @@ export const ArticleParamsForm = () => {
 						onChange={contentWidthOptionClickHandler}></Select>
 
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
+						<Button
+							title='Сбросить'
+							htmlType='reset'
+							type='clear'
+							onClick={() => resetForm()}
+						/>
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
