@@ -21,12 +21,10 @@ import { RadioGroup } from 'src/ui/radio-group';
 
 export interface IArticleParamsFormProps {
 	onSubmit: (data: IFormTypeData) => void;
-	onReset: () => void;
 }
 
 export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
 	onSubmit,
-	onReset,
 }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [currentFont, setCurrentFont] = useState<OptionType | null>(
@@ -110,13 +108,20 @@ export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
 	}
 
 	// Сбрасывает значение полей формы до дефолтных
-	function resetForm() {
+	function handleFormReset(evt: SyntheticEvent) {
+		evt.preventDefault();
 		setCurrentFont(defaultArticleState.fontFamilyOption);
 		setCurrentFontColor(defaultArticleState.fontColor);
 		setBackgroundColor(defaultArticleState.backgroundColor);
 		setContentWidth(defaultArticleState.contentWidth);
 		setFontSize(defaultArticleState.fontSizeOption);
-		onReset();
+		onSubmit({
+			'--font-family': defaultArticleState.fontFamilyOption,
+			'--font-size': defaultArticleState.fontSizeOption,
+			'--font-color': defaultArticleState.fontColor,
+			'--container-width': defaultArticleState.contentWidth,
+			'--bg-color': defaultArticleState.backgroundColor,
+		});
 	}
 
 	return (
@@ -133,7 +138,8 @@ export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
 				<form
 					className={styles.form}
 					ref={articleParamsFormRef}
-					onSubmit={handleFormSubmit}>
+					onSubmit={handleFormSubmit}
+					onReset={handleFormReset}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
@@ -176,12 +182,7 @@ export const ArticleParamsForm: React.FC<IArticleParamsFormProps> = ({
 						onChange={contentWidthOptionClickHandler}></Select>
 
 					<div className={styles.bottomContainer}>
-						<Button
-							title='Сбросить'
-							htmlType='reset'
-							type='clear'
-							onClick={() => resetForm()}
-						/>
+						<Button title='Сбросить' htmlType='reset' type='clear' />
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>

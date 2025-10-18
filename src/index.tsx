@@ -41,16 +41,9 @@ const App = () => {
 		setFormData(normalizeFormData(data));
 	}
 
-	function handleFormReset() {
-		setFormData(defaultArticleStytles);
-	}
-
 	return (
 		<main className={clsx(styles.main)} style={formData as CSSProperties}>
-			<ArticleParamsForm
-				onSubmit={handleFormSubmit}
-				onReset={handleFormReset}
-			/>
+			<ArticleParamsForm onSubmit={handleFormSubmit} />
 			<Article />
 		</main>
 	);
